@@ -10,17 +10,38 @@
     display:flex; align-items:center; justify-content:center;
     flex-direction:column; text-align:center;
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    overflow:hidden;
+    overflow:hidden; padding:6vh 6vw;
   }
+
+  /* Typing container */
   .txt{
-    font-size:7vw;
-    border-right:.08em solid currentColor;
-    white-space:pre; overflow:hidden; width:0;
-    animation:typing 4.5s steps(40,end) forwards, blink .9s step-end infinite;
-    text-shadow:0 0 .4em rgba(255,111,191,.6);
+    font-size: clamp(18px, 4.5vw, 36px);
+    line-height: 1.35;
+    text-shadow: 0 0 .4em rgba(255,111,191,.55);
+    max-width: 900px;
   }
-  @keyframes typing{to{width:40ch}}
-  @keyframes blink{50%{border-color:transparent}}
+
+  /* New letter-by-letter pop style */
+  .ch{
+    opacity: 0;
+    display: inline-block;
+    transform: translateY(.15em) scale(.98);
+    animation: pop .24s ease-out forwards;
+  }
+  @keyframes pop{
+    60%{ opacity: 1; transform: translateY(-.04em) scale(1.04); }
+    100%{ opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Blinking caret */
+  .caret{
+    display:inline-block; width:.55ch; height:1em; vertical-align:-0.1em;
+    border-right: .12em solid currentColor; margin-left:.06ch;
+    animation: blink .9s step-end infinite;
+  }
+  @keyframes blink{50%{border-right-color:transparent}}
+
+  /* Floating hearts/sparkles */
   .float{position:fixed; inset:0; pointer-events:none;}
   .float span{
     position:absolute; bottom:-10vh; font-size:24px; opacity:.9;
@@ -32,6 +53,8 @@
     10%{opacity:1;}
     100%{transform:translateY(-120vh) translateX(var(--drift,0)) rotate(360deg); opacity:0;}
   }
+
+  /* Music pill */
   .pill{
     position:fixed; right:12px; bottom:12px;
     background:rgba(255,111,191,.15);
@@ -44,20 +67,67 @@
   .hidden{display:none}
 </style>
 
-<div class="txt">
-Love u bby 💗
-Misssssss 
-uuuuuuuuuuu 
-soooooo 
-muchhhhhhhh
+<div class="txt" id="out" aria-live="polite"></div>
+<div class="caret" id="caret"></div>
 
-With love,
-M</div>
 <div class="float" id="fx"></div>
 <button id="music" class="pill hidden">Tap for music ♪</button>
 
 <script>
-// Floating hearts & sparkles
+/* ========= 1) YOUR MESSAGE (unchanged text, now typed letter-by-letter) ========= */
+const MESSAGE = `Hey bby ❤️
+
+I just wanted you to know
+how much I love you.
+
+Every little thing you do makes my day brighter,
+and even when we're apart, you're always on my mind.
+
+You mean so much to me,
+and I’m so grateful to have you.
+
+Love u always 💖
+
+With all my heart,
+M`;
+
+/* === Typing settings === */
+const TYPING_SPEED_MS = 36;     // time between letters (smaller = faster)
+const PARAGRAPH_PAUSE_MS = 350; // extra pause after each line break
+const POP_RANDOM_JITTER = 90;   // add a little randomness to the pop timing (ms)
+
+/* ========= 2) LETTER-BY-LETTER TYPING WITH POP ========= */
+const out = document.getElementById('out');
+const caret = document.getElementById('caret');
+let i = 0;
+
+function appendChar(ch){
+  if(ch === '\n'){
+    out.appendChild(document.createElement('br'));
+    return;
+  }
+  const span = document.createElement('span');
+  span.className = 'ch';
+  span.textContent = ch;
+  // small random delay so groups of letters pop more organically
+  span.style.animationDelay = (Math.random()*POP_RANDOM_JITTER/1000).toFixed(3) + 's';
+  out.appendChild(span);
+}
+
+function typeNext(){
+  if(i >= MESSAGE.length){
+    // keep caret for vibe; remove it if you prefer:
+    // caret.remove();
+    return;
+  }
+  const ch = MESSAGE[i++];
+  appendChar(ch);
+  const delay = (ch === '\n') ? PARAGRAPH_PAUSE_MS : TYPING_SPEED_MS;
+  setTimeout(typeNext, delay);
+}
+setTimeout(typeNext, 500); // slight intro delay
+
+/* ========= 3) FLOATING HEARTS & SPARKLES ========= */
 (function(){
   const fx = document.getElementById('fx');
   const SYMS = ['💖','✨','💗','💞'];
@@ -71,11 +141,11 @@ M</div>
     fx.appendChild(s);
     s.addEventListener('animationend', ()=> s.remove());
   }
-  for(let i=0;i<18;i++) setTimeout(spawn, i*120); // burst
-  setInterval(spawn, 400); // gentle stream
+  for(let k=0;k<18;k++) setTimeout(spawn, k*120); // burst
+  setInterval(spawn, 400);                        // gentle stream
 })();
 
-// Soft instrumental (Web Audio), auto-plays if allowed, else shows a tap button
+/* ========= 4) SOFT INSTRUMENTAL BACKGROUND (Web Audio) ========= */
 (function(){
   let ctx, master, on = false, timer;
   const btn = document.getElementById('music');
@@ -93,8 +163,8 @@ M</div>
       const g = ctx.createGain();
       o.type = 'sine'; o.frequency.value = f; o.detune.value = (-6 + Math.random()*12);
       g.gain.setValueAtTime(0.0, now);
-      g.gain.linearRampToValueAtTime(0.04/chord.length, now + 1.5); // attack
-      g.gain.linearRampToValueAtTime(0.0, now + 6.0);               // release
+      g.gain.linearRampToValueAtTime(0.04/chord.length, now + 1.5);
+      g.gain.linearRampToValueAtTime(0.0, now + 6.0);
       o.connect(g); g.connect(master);
       o.start(now); o.stop(now + 6.2);
     });
@@ -126,19 +196,12 @@ M</div>
     try{
       await startAudio();
       if(!ctx || ctx.state !== 'running') btn.classList.remove('hidden');
-    }catch(e){
-      btn.classList.remove('hidden');
-    }
+    }catch(e){ btn.classList.remove('hidden'); }
   });
 
-  btn.addEventListener('click', async ()=>{
-    if(!on){ await startAudio(); btn.textContent='Music on ♪'; btn.classList.add('hidden'); }
-    else { stopAudio(); btn.textContent='Tap for music ♪'; }
+  document.getElementById('music').addEventListener('click', async ()=>{
+    if(!on){ await startAudio(); this.textContent='Music on ♪'; this.classList.add('hidden'); }
+    else { stopAudio(); this.textContent='Tap for music ♪'; }
   });
 })();
 </script>
-
-
-
-
-
