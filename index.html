@@ -74,7 +74,7 @@
 <button id="music" class="pill hidden">Tap for music ♪</button>
 
 <script>
-/* ========= 1) YOUR MESSAGE (unchanged text, now typed letter-by-letter) ========= */
+/* ========= 1) YOUR MESSAGE ========= */
 const MESSAGE = `Hola bby ❤️
 
 I just wanted you to know
@@ -92,11 +92,11 @@ With all my heart,
 M`;
 
 /* === Typing settings === */
-const TYPING_SPEED_MS = 36;     // time between letters (smaller = faster)
+const TYPING_SPEED_MS = 36;     // time between letters
 const PARAGRAPH_PAUSE_MS = 350; // extra pause after each line break
-const POP_RANDOM_JITTER = 90;   // add a little randomness to the pop timing (ms)
+const POP_RANDOM_JITTER = 90;   // small randomness to timing (ms)
 
-/* ========= 2) LETTER-BY-LETTER TYPING WITH POP ========= */
+/* ========= 2) LETTER-BY-LETTER TYPING ========= */
 const out = document.getElementById('out');
 const caret = document.getElementById('caret');
 let i = 0;
@@ -108,16 +108,17 @@ function appendChar(ch){
   }
   const span = document.createElement('span');
   span.className = 'ch';
-  span.textContent = ch;
-  // small random delay so groups of letters pop more organically
+  // ✅ Fix: ensure spaces render correctly
+  span.textContent = (ch === ' ') ? '\u00A0' : ch;
+
+  // small random delay for natural pop
   span.style.animationDelay = (Math.random()*POP_RANDOM_JITTER/1000).toFixed(3) + 's';
   out.appendChild(span);
 }
 
 function typeNext(){
   if(i >= MESSAGE.length){
-    // keep caret for vibe; remove it if you prefer:
-    // caret.remove();
+    // caret can stay for vibe
     return;
   }
   const ch = MESSAGE[i++];
@@ -125,9 +126,9 @@ function typeNext(){
   const delay = (ch === '\n') ? PARAGRAPH_PAUSE_MS : TYPING_SPEED_MS;
   setTimeout(typeNext, delay);
 }
-setTimeout(typeNext, 500); // slight intro delay
+setTimeout(typeNext, 500);
 
-/* ========= 3) FLOATING HEARTS & SPARKLES ========= */
+/* ========= 3) FLOATING HEARTS ========= */
 (function(){
   const fx = document.getElementById('fx');
   const SYMS = ['💖','✨','💗','💞'];
@@ -142,10 +143,10 @@ setTimeout(typeNext, 500); // slight intro delay
     s.addEventListener('animationend', ()=> s.remove());
   }
   for(let k=0;k<18;k++) setTimeout(spawn, k*120); // burst
-  setInterval(spawn, 400);                        // gentle stream
+  setInterval(spawn, 400);                        // stream
 })();
 
-/* ========= 4) SOFT INSTRUMENTAL BACKGROUND (Web Audio) ========= */
+/* ========= 4) SOFT INSTRUMENTAL BACKGROUND ========= */
 (function(){
   let ctx, master, on = false, timer;
   const btn = document.getElementById('music');
@@ -205,4 +206,3 @@ setTimeout(typeNext, 500); // slight intro delay
   });
 })();
 </script>
-
