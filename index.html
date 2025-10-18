@@ -13,50 +13,82 @@
     overflow:hidden; padding:6vh 6vw;
   }
 
-  /* Typing container */
   .txt{
     font-size: clamp(18px, 4.5vw, 36px);
     line-height: 1.35;
     text-shadow: 0 0 .4em rgba(255,111,191,.55);
     max-width: 900px;
+    z-index: 1;
   }
 
-  /* New letter-by-letter pop style */
+  /* Letter-by-letter pop */
   .ch{
-    opacity: 0;
-    display: inline-block;
+    opacity:0; display:inline-block;
     transform: translateY(.15em) scale(.98);
     animation: pop .24s ease-out forwards;
   }
   @keyframes pop{
-    60%{ opacity: 1; transform: translateY(-.04em) scale(1.04); }
-    100%{ opacity: 1; transform: translateY(0) scale(1); }
+    60%{ opacity:1; transform: translateY(-.04em) scale(1.06); }
+    100%{ opacity:1; transform: translateY(0)       scale(1); }
   }
 
-  /* Blinking caret */
+  /* Caret */
   .caret{
     display:inline-block; width:.55ch; height:1em; vertical-align:-0.1em;
-    border-right: .12em solid currentColor; margin-left:.06ch;
-    animation: blink .9s step-end infinite;
+    border-right:.12em solid currentColor; margin-left:.06ch;
+    animation:blink .9s step-end infinite;
   }
   @keyframes blink{50%{border-right-color:transparent}}
 
-  /* Floating hearts/sparkles */
-  .float{position:fixed; inset:0; pointer-events:none;}
+  /* Floating hearts / sparkles */
+  .float{position:fixed; inset:0; pointer-events:none; z-index:0;}
   .float span{
     position:absolute; bottom:-10vh; font-size:24px; opacity:.9;
     animation:rise linear forwards;
     filter:drop-shadow(0 0 6px rgba(255,111,191,.6));
   }
   @keyframes rise{
-    0%{transform:translateY(0) translateX(0) rotate(0deg); opacity:0;}
-    10%{opacity:1;}
+    0%  {transform:translateY(0) translateX(0) rotate(0deg); opacity:0;}
+    10% {opacity:1;}
     100%{transform:translateY(-120vh) translateX(var(--drift,0)) rotate(360deg); opacity:0;}
+  }
+
+  /* BIG finale overlay */
+  #finale{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:2vh; z-index:5; pointer-events:none;
+    opacity:0; transform:scale(.6);
+  }
+  #finale.show{ animation:reveal 1.2s cubic-bezier(.2,1,.2,1) forwards, heartbeat 2.5s ease-in-out 1.2s infinite; }
+  #finale .bg-glow{
+    position:absolute; inset:-20vh; z-index:-1;
+    background: radial-gradient(40% 40% at 50% 50%, rgba(255,111,191,.22), transparent 60%);
+    filter: blur(30px);
+  }
+  #big-heart{
+    font-size: clamp(140px, 40vw, 620px);   /* HUGE */
+    text-shadow: 0 0 40px rgba(255,111,191,.7), 0 0 80px rgba(255,111,191,.35);
+    line-height: 1;
+  }
+  #big-kiss{
+    font-size: clamp(80px, 22vw, 380px);
+    text-shadow: 0 0 30px rgba(255,111,191,.6), 0 0 60px rgba(255,111,191,.3);
+    line-height: 1;
+  }
+  @keyframes reveal{
+    0%{opacity:0; transform:scale(.6)}
+    60%{opacity:1; transform:scale(1.12)}
+    100%{opacity:1; transform:scale(1)}
+  }
+  @keyframes heartbeat{
+    0%,100%{ transform:scale(1) }
+    30%{ transform:scale(1.04) }
+    60%{ transform:scale(1.01) }
   }
 
   /* Music pill */
   .pill{
-    position:fixed; right:12px; bottom:12px;
+    position:fixed; right:12px; bottom:12px; z-index:10;
     background:rgba(255,111,191,.15);
     border:1px solid rgba(255,111,191,.35);
     color:var(--pink); padding:.6rem .9rem; border-radius:999px;
@@ -70,14 +102,21 @@
 <div class="txt" id="out" aria-live="polite"></div>
 <div class="caret" id="caret"></div>
 
+<!-- BIG finale overlay -->
+<div id="finale" aria-hidden="true">
+  <div class="bg-glow"></div>
+  <div id="big-heart">💖</div>
+  <div id="big-kiss">😘</div>
+</div>
+
 <div class="float" id="fx"></div>
 <button id="music" class="pill hidden">Tap for music ♪</button>
 
 <script>
-/* ========= 1) YOUR MESSAGE ========= */
-const MESSAGE = `Hola bby ❤️
+/* ========= 1) MESSAGE (same text) ========= */
+const MESSAGE = `Hey bby ❤️
 
-I just wanted you to know
+I just wanted to remind you
 how much I love you.
 
 Every little thing you do makes my day brighter,
@@ -91,34 +130,33 @@ Love u always 💖
 With all my heart,
 M`;
 
-/* === Typing settings === */
-const TYPING_SPEED_MS = 36;     // time between letters
-const PARAGRAPH_PAUSE_MS = 350; // extra pause after each line break
-const POP_RANDOM_JITTER = 90;   // small randomness to timing (ms)
+const TYPING_SPEED_MS = 36;
+const PARAGRAPH_PAUSE_MS = 350;
+const POP_RANDOM_JITTER = 90;
 
-/* ========= 2) LETTER-BY-LETTER TYPING ========= */
 const out = document.getElementById('out');
 const caret = document.getElementById('caret');
+const finale = document.getElementById('finale');
 let i = 0;
 
 function appendChar(ch){
-  if(ch === '\n'){
-    out.appendChild(document.createElement('br'));
-    return;
-  }
+  if(ch === '\n'){ out.appendChild(document.createElement('br')); return; }
   const span = document.createElement('span');
   span.className = 'ch';
-  // ✅ Fix: ensure spaces render correctly
-  span.textContent = (ch === ' ') ? '\u00A0' : ch;
-
-  // small random delay for natural pop
-  span.style.animationDelay = (Math.random()*POP_RANDOM_JITTER/1000).toFixed(3) + 's';
+  span.textContent = ch;
+  span.style.animationDelay = (Math.random()*POP_RANDOM_JITTER/1000).toFixed(3)+'s';
   out.appendChild(span);
 }
 
 function typeNext(){
   if(i >= MESSAGE.length){
-    // caret can stay for vibe
+    caret.remove();
+    // Trigger VERY BIG emoji overlay after a short beat
+    setTimeout(()=>{
+      finale.classList.add('show');
+      // extra burst of big hearts on reveal
+      burstHearts();
+    }, 600);
     return;
   }
   const ch = MESSAGE[i++];
@@ -128,25 +166,31 @@ function typeNext(){
 }
 setTimeout(typeNext, 500);
 
-/* ========= 3) FLOATING HEARTS ========= */
+/* ========= 2) FLOATING HEARTS & SPARKLES ========= */
 (function(){
   const fx = document.getElementById('fx');
   const SYMS = ['💖','✨','💗','💞'];
-  function spawn(){
+  function spawn(sizeMul=1){
     const s = document.createElement('span');
     s.textContent = SYMS[Math.floor(Math.random()*SYMS.length)];
     s.style.left = (Math.random()*100) + 'vw';
-    s.style.fontSize = (18 + Math.random()*26) + 'px';
+    s.style.fontSize = ((18 + Math.random()*26) * sizeMul) + 'px';
     s.style.setProperty('--drift', (Math.random()*80 - 40) + 'px');
     s.style.animationDuration = (5 + Math.random()*5) + 's';
     fx.appendChild(s);
     s.addEventListener('animationend', ()=> s.remove());
   }
-  for(let k=0;k<18;k++) setTimeout(spawn, k*120); // burst
-  setInterval(spawn, 400);                        // stream
+  // gentle stream
+  for(let k=0;k<18;k++) setTimeout(()=>spawn(1), k*120);
+  setInterval(()=>spawn(1), 400);
+
+  // finale burst (bigger, slower)
+  window.burstHearts = function(){
+    for(let j=0;j<24;j++) setTimeout(()=>spawn(1.8), j*70);
+  }
 })();
 
-/* ========= 4) SOFT INSTRUMENTAL BACKGROUND ========= */
+/* ========= 3) SOFT INSTRUMENTAL MUSIC ========= */
 (function(){
   let ctx, master, on = false, timer;
   const btn = document.getElementById('music');
@@ -162,7 +206,7 @@ setTimeout(typeNext, 500);
     chord.forEach((f)=>{
       const o = ctx.createOscillator();
       const g = ctx.createGain();
-      o.type = 'sine'; o.frequency.value = f; o.detune.value = (-6 + Math.random()*12);
+      o.type='sine'; o.frequency.value=f; o.detune.value=(-6+Math.random()*12);
       g.gain.setValueAtTime(0.0, now);
       g.gain.linearRampToValueAtTime(0.04/chord.length, now + 1.5);
       g.gain.linearRampToValueAtTime(0.0, now + 6.0);
@@ -173,36 +217,33 @@ setTimeout(typeNext, 500);
 
   async function startAudio(){
     if(on) return;
-    ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+    ctx = ctx || new (window.AudioContext||window.webkitAudioContext)();
     master = master || ctx.createGain();
-    master.gain.value = 0.0001;
+    master.gain.value=0.0001;
     master.connect(ctx.destination);
     try{ await ctx.resume(); }catch(e){}
-    master.gain.exponentialRampToValueAtTime(0.05, ctx.currentTime + 3);
-    let i = 0;
-    function tick(){ playChord(chords[i++ % chords.length]); }
-    tick();
-    timer = setInterval(tick, 6000);
-    on = true;
+    master.gain.exponentialRampToValueAtTime(0.05, ctx.currentTime+3);
+    let i=0; function tick(){ playChord(chords[i++%chords.length]); }
+    tick(); timer=setInterval(tick,6000); on=true;
   }
 
   function stopAudio(){
     if(!on) return;
     clearInterval(timer);
-    if(master) master.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1);
-    on = false;
+    if(master) master.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+1);
+    on=false;
   }
 
   document.addEventListener('DOMContentLoaded', async ()=>{
     try{
       await startAudio();
-      if(!ctx || ctx.state !== 'running') btn.classList.remove('hidden');
+      if(!ctx || ctx.state!=='running') btn.classList.remove('hidden');
     }catch(e){ btn.classList.remove('hidden'); }
   });
 
-  document.getElementById('music').addEventListener('click', async ()=>{
-    if(!on){ await startAudio(); this.textContent='Music on ♪'; this.classList.add('hidden'); }
-    else { stopAudio(); this.textContent='Tap for music ♪'; }
+  btn.addEventListener('click', async ()=>{
+    if(!on){ await startAudio(); btn.textContent='Music on ♪'; btn.classList.add('hidden'); }
+    else { stopAudio(); btn.textContent='Tap for music ♪'; }
   });
 })();
 </script>
