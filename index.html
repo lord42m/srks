@@ -172,14 +172,7 @@ const finale = document.getElementById('finale');
 const bloom  = document.getElementById('bloom');
 let i = 0;
 
-function appendChar(ch){
-  if(ch === '\n'){ out.appendChild(document.createElement('br')); return; }
-  const span = document.createElement('span');
-  span.className = 'ch';
-  span.textContent = ch;
-  span.style.animationDelay = (Math.random()*POP_RANDOM_JITTER/1000).toFixed(3)+'s';
-  out.appendChild(span);
-}
+0;
 
 function typeNext(){
   if(i >= MESSAGE.length){
@@ -282,4 +275,5 @@ setTimeout(typeNext, 500);
   });
 })();
 </script>
+
 
