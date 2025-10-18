@@ -3,7 +3,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Love Note</title>
 <style>
-  :root{ --pink:#ff6fbf; --bg:#0b0d10; }
+  :root{
+    --pink:#ff6fbf;
+    --bg:#0b0d10;
+    --word-space:.28em;   /* ⬅ increase/decrease to change space between words */
+    --letter-space:.012em;/* ⬅ tiny tracking for smoothness */
+  }
   html,body{height:100%;margin:0}
   body{
     background:var(--bg); color:var(--pink);
@@ -13,11 +18,14 @@
     overflow:hidden; padding:6vh 6vw;
   }
 
+  /* Main text block */
   .txt{
     font-size: clamp(18px, 4.5vw, 36px);
     line-height: 1.35;
     text-shadow: 0 0 .4em rgba(255,111,191,.55);
     max-width: 900px;
+    word-spacing: var(--word-space);
+    letter-spacing: var(--letter-space);
     z-index: 1;
   }
 
@@ -59,11 +67,17 @@
     flex-direction:column; gap:2vh; z-index:5; pointer-events:none;
     opacity:0; transform:scale(.6);
   }
-  #finale.show{ animation:reveal 1.2s cubic-bezier(.2,1,.2,1) forwards, heartbeat 2.5s ease-in-out 1.2s infinite; }
+  /* Reveal → heartbeat (3x) → fade out */
+  #finale.show{
+    animation:
+      reveal   1.2s cubic-bezier(.2,1,.2,1) 0s 1 forwards,
+      heartbeat 2.5s ease-in-out            1.2s 3,
+      fadeout  1.1s ease                    9s   1 forwards;
+  }
   #finale .bg-glow{
     position:absolute; inset:-20vh; z-index:-1;
     background: radial-gradient(40% 40% at 50% 50%, rgba(255,111,191,.22), transparent 60%);
-    filter: blur(30px);
+    filter: blur(32px);
   }
   #big-heart{
     font-size: clamp(140px, 40vw, 620px);   /* HUGE */
@@ -84,6 +98,21 @@
     0%,100%{ transform:scale(1) }
     30%{ transform:scale(1.04) }
     60%{ transform:scale(1.01) }
+  }
+  @keyframes fadeout{
+    to{ opacity:0; transform:scale(.98) }
+  }
+
+  /* Pink bloom flash on reveal */
+  #bloom{
+    position:fixed; inset:0; pointer-events:none; z-index:4;
+    opacity:0; background: radial-gradient(closest-side, rgba(255,111,191,.45), transparent 70%);
+  }
+  #bloom.flash{ animation: bloom 0.6s ease-out forwards; }
+  @keyframes bloom{
+    0%  { opacity:0; transform:scale(.9); }
+    35% { opacity:1; transform:scale(1); }
+    100%{ opacity:0; transform:scale(1.15); }
   }
 
   /* Music pill */
@@ -108,13 +137,15 @@
   <div id="big-heart">💖</div>
   <div id="big-kiss">😘</div>
 </div>
+<!-- Bloom flash layer -->
+<div id="bloom"></div>
 
 <div class="float" id="fx"></div>
 <button id="music" class="pill hidden">Tap for music ♪</button>
 
 <script>
-/* ========= 1) MESSAGE (same text) ========= */
-const MESSAGE = `Hey bby ❤️
+/* ========= 1) MESSAGE ========= */
+const MESSAGE = `Holaaaaa bby ❤️
 
 I just wanted to remind you
 how much I love you.
@@ -132,13 +163,14 @@ Love u always 🥰
 With all my heart,
 M`;
 
-const TYPING_SPEED_MS = 36;
+const TYPING_SPEED_MS = 36;   // per-character speed
 const PARAGRAPH_PAUSE_MS = 350;
 const POP_RANDOM_JITTER = 90;
 
 const out = document.getElementById('out');
 const caret = document.getElementById('caret');
 const finale = document.getElementById('finale');
+const bloom  = document.getElementById('bloom');
 let i = 0;
 
 function appendChar(ch){
@@ -152,12 +184,14 @@ function appendChar(ch){
 
 function typeNext(){
   if(i >= MESSAGE.length){
+    // Caret gone, then show big finale + bloom
     caret.remove();
-    // Trigger VERY BIG emoji overlay after a short beat
     setTimeout(()=>{
       finale.classList.add('show');
-      // extra burst of big hearts on reveal
-      burstHearts();
+      bloom.classList.add('flash');
+      burstHearts(); // bigger floating hearts burst
+      // remove bloom element after animation ends (cleanup)
+      setTimeout(()=>{ bloom.classList.remove('flash'); }, 700);
     }, 600);
     return;
   }
@@ -186,7 +220,7 @@ setTimeout(typeNext, 500);
   for(let k=0;k<18;k++) setTimeout(()=>spawn(1), k*120);
   setInterval(()=>spawn(1), 400);
 
-  // finale burst (bigger, slower)
+  // finale burst (bigger)
   window.burstHearts = function(){
     for(let j=0;j<24;j++) setTimeout(()=>spawn(1.8), j*70);
   }
@@ -249,4 +283,3 @@ setTimeout(typeNext, 500);
   });
 })();
 </script>
-
