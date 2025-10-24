@@ -45,13 +45,24 @@
     .hero h1{margin:0 0 8px;font-size:clamp(28px,4.5vw,44px)}
     .hero p.tag{margin:0;color:var(--muted);font-size:clamp(14px,2.2vw,16px)}
     .badge{display:inline-block;padding:6px 12px;border-radius:999px;background:#fff;border:1px solid var(--ring);color:var(--muted);font-size:12px;letter-spacing:.3px;margin-top:10px}
-    .heart{position:absolute;right:-24px;top:-24px;width:160px;height:160px;opacity:.15;transform:rotate(15deg);
+
+    /* Floating animated heart */
+    .heart{
+      position:absolute;right:-24px;top:-24px;width:160px;height:160px;opacity:.15;
       background:
         radial-gradient(closest-side,var(--accent)93%,transparent94%) left,
         radial-gradient(closest-side,var(--accent)93%,transparent94%) right;
       background-size:50% 80%;background-repeat:no-repeat;
       clip-path:polygon(50%90%,0 45%,10%15%,35%0,50%10%,65%0,90%15%,100%45%);
-      filter:blur(.5px)}
+      filter:blur(.5px);
+      animation: heartFloat 8s ease-in-out infinite alternate;
+    }
+    @keyframes heartFloat{
+      0%   { transform: translateY(0) rotate(12deg) scale(1); }
+      50%  { transform: translateY(8px) rotate(15deg) scale(1.02); }
+      100% { transform: translateY(14px) rotate(18deg) scale(1.03); }
+    }
+
     .card{background:var(--card);border:1px solid var(--ring);border-radius:var(--radius);
       box-shadow:var(--shadow);padding:24px;margin-top:18px}
     .grid{display:grid;gap:18px;grid-template-columns:repeat(12,1fr)}
@@ -105,10 +116,15 @@
         </div>
         <div class="col-5">
           <div class="photo">
-            <img src="https://github.com/lord42m/srks/blob/f85475c1840ea1a3f3833f50979d0953ea6bdb82/asd1.jpg" style="width:100%;height:100%;object-fit:cover;">)
+            <img
+              src="https://raw.githubusercontent.com/lord42m/srks/a5e821906366728930fe1dd2c09e17e14fa37869/asd1.jpg"
+              alt="Our favorite photo"
+              loading="lazy"
+              style="width:100%;height:100%;object-fit:cover;display:block;"
+            >
           </div>
           <p class="note" style="margin-top:10px">
-            ❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️
+            ❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️
           </p>
         </div>
       </div>
@@ -165,16 +181,12 @@
         You’re my favorite part of every day. If you ever forget, just come back to this page
         and let it remind you: I love you more than words (but I’ll keep trying anyway). 🫶
       </p>
-      <p class="signature">Forever yours, <stron>M</stron></strong></p>
+      <p class="signature">Forever yours, <strong>YOUR_NAME</strong></p>
     </section>
 
     <footer>
-      Made with love 🥰
-    <footer>
+      •Made with love 🥰• 
+    </footer>
   </div>
 </body>
 </html>
-
-
-
-
