@@ -63,73 +63,130 @@
       100% { transform: translateY(14px) rotate(18deg) scale(1.03); }
     }
 
-    .card{background:var(--card);border:1px solid var(--ring);border-radius:var(--radius);
-      box-shadow:var(--shadow);padding:24px;margin-top:18px}
+    .card{
+      background:var(--card);border:1px solid var(--ring);border-radius:var(--radius);
+      box-shadow:var(--shadow);padding:24px;margin-top:18px
+    }
     .grid{display:grid;gap:18px;grid-template-columns:repeat(12,1fr)}
     .col-7{grid-column:span 7}.col-5{grid-column:span 5}.col-6{grid-column:span 6}.col-12{grid-column:1/-1}
     @media(max-width:820px){.col-7,.col-5,.col-6{grid-column:1/-1}}
     .photo{width:100%;aspect-ratio:4/3;border-radius:18px;overflow:hidden;border:1px dashed #ffd3dc;display:grid;place-items:center;color:#b35a6a;
       background:repeating-linear-gradient(45deg,#fff8fa 0 10px,#fff 10px 20px);font-size:14px}
-    .note{background:#fff8fa;border:1px solid #ffd6de;padding:12px 14px;border-radius:12px;font-size:14px;color:#7a6b79}
+    .note{
+      background:#fff8fa;border:1px solid #ffd6de;padding:12px 14px;border-radius:12px;
+      font-size:14px;color:#7a6b79
+    }
     h2.section-title{margin:0 0 12px;font-size:20px;display:flex;align-items:center;gap:10px}
     .dot{width:8px;height:8px;background:var(--accent);border-radius:50%}
     ul.love-list{margin:10px 0 0;padding:0 0 0 1rem}
     ul.love-list li{margin:6px 0}
-    .blockquote{margin:6px 0 0;padding:14px 16px;border-left:3px solid var(--accent);background:#fff7f9;border-radius:8px}
-
-    /* --- Symmetrical timeline fix --- */
-    .timeline{
-      position:relative;
-      padding-left:28px;
+    .blockquote{
+      margin:6px 0 0;padding:14px 16px;border-left:3px solid var(--accent);
+      background:#fff7f9;border-radius:8px
     }
-    .timeline::before{
-      content:"";
-      position:absolute;
-      left:28px;
-      top:0;
-      bottom:0;
-      width:2px;
-      background:#ffd6de;
-      transform:translateX(-50%);
-    }
-    .event{
-      display:flex;
-      align-items:flex-start;
-      gap:12px;
-      margin:14px 0;
-      position:relative;
-    }
-    .event .pin{
-      flex:0 0 16px;
-      width:16px;
-      height:16px;
-      border-radius:50%;
-      background:#fff;
-      border:3px solid var(--accent);
-      position:relative;
-      z-index:1;
-      margin-top:3px;
-    }
-    .event .detail{
-      background:#fff;
-      border:1px solid var(--ring);
-      border-radius:12px;
-      padding:10px 12px;
-      flex:1;
-    }
-    /* --- End timeline fix --- */
 
     .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
-    .cta a.button{text-decoration:none;display:inline-block;padding:12px 16px;border-radius:999px;border:1px solid var(--accent-2);
+    .cta a.button{
+      text-decoration:none;display:inline-block;padding:12px 16px;border-radius:999px;
+      border:1px solid var(--accent-2);
       background:linear-gradient(180deg,#fff,#fff6f8);
       box-shadow:0 6px 18px rgba(255,77,109,.13);
-      color:#b3264a;font-weight:600}
+      color:#b3264a;font-weight:600;cursor:pointer;transition:transform .2s ease;
+      min-width:max-content;
+    }
+    .cta a.button:hover{transform:scale(1.05)}
     .signature{margin-top:14px;font-size:15px;color:var(--muted)}
     footer{text-align:center;color:#8a7689;font-size:13px;margin-top:28px}
+
     @media print{
       body{background:#fff}.wrap::before,.wrap::after,.heart{display:none}
       .card,.hero{box-shadow:none}
       .cta a.button{border:1px solid #bbb;box-shadow:none;background:#fff;color:#000}
+    }
+
+    /* ===== Floating popup (centered modal) ===== */
+    .popup-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.22);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity .2s ease;
+      z-index:9999;
+    }
+    .popup-backdrop.active{
+      pointer-events:auto;
+      opacity:1;
+    }
+    .popup-card{
+      width:100%;
+      max-width:320px;
+      background:linear-gradient(135deg,#fff,#fff6f8 55%,#ffeef3 100%);
+      border:1px solid var(--ring);
+      box-shadow:0 30px 60px rgba(0,0,0,.28);
+      border-radius:18px;
+      padding:16px 16px 14px;
+      font-size:14px;
+      color:var(--ink);
+      line-height:1.45;
+      position:relative;
+      animation:floatUp .22s ease both;
+      max-height:80vh;
+      display:flex;
+      flex-direction:column;
+    }
+    @keyframes floatUp{
+      from{transform:translateY(10px) scale(.96);opacity:0}
+      to{transform:translateY(0) scale(1);opacity:1}
+    }
+    .popup-close{
+      position:absolute;
+      top:8px;right:8px;
+      background:#fff;
+      color:#b3264a;
+      border:1px solid var(--ring);
+      border-radius:999px;
+      font-size:12px;
+      line-height:1;
+      padding:4px 7px;
+      cursor:pointer;
+      box-shadow:0 8px 20px rgba(255,77,109,.18);
+    }
+    .popup-heading{
+      font-weight:600;
+      font-size:13px;
+      color:#b3264a;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      margin-bottom:8px;
+      padding-right:28px; /* avoid overlap with close btn */
+    }
+    .popup-dot{
+      width:7px;height:7px;border-radius:50%;background:var(--accent);
+      box-shadow:0 0 6px rgba(255,77,109,.6);
+      flex-shrink:0;
+    }
+    .popup-scroll{
+      overflow:auto;
+      border-radius:12px;
+      flex:1;
+    }
+    .popup-text{
+      color:#2b2b2b;
+      font-size:14px;
+      font-weight:500;
+    }
+    .popup-sub{
+      font-size:12px;
+      color:#7a6b79;
+      margin-top:10px;
+      text-align:center;
+      line-height:1.4;
     }
   </style>
 </head>
@@ -185,11 +242,14 @@
         <li>Listening, even when words are messy.</li>
         <li>Cheering for you as always for everything you do.</li>
       </ul>
+
+      <!-- BUTTONS -->
       <div class="cta">
-        <a class="button" href="https://open.spotify.com/playlist/3BBdBzOrmW88fxN50IDeWu?si=537915333fcb477d&pt=53ae91ad2fbf1a471c5f63c4ca3ce975" target="_blank" rel="noreferrer">
-          Our playlist 🎵
-        </a>
+        <a class="button" href="#" onclick="openSpotify()">Our playlist 🎵</a>
+        <a class="button" href="#" onclick="showMotivation()">Love motivation 💬</a>
+        <a class="button" href="#" onclick="showWorkMood()">Work mood 😂</a>
       </div>
+
       <p class="note">Kalau lagi bosen dengerin lagu disini yanggg</p>
     </section>
 
@@ -213,8 +273,106 @@
       •Made with love 🥰•
     </footer>
   </div>
+
+  <!-- POPUP MODAL (centered). Reused for both buttons -->
+  <div id="popupBackdrop" class="popup-backdrop">
+    <div class="popup-card" id="popupCard">
+      <button class="popup-close" onclick="closePopup()">✕</button>
+      <div class="popup-heading">
+        <span class="popup-dot"></span>
+        <span id="popupTitle">Title</span>
+      </div>
+      <div class="popup-scroll" id="popupBody">
+        <!-- dynamic content -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Spotify App Redirect ---
+    function openSpotify() {
+      // Try open in app
+      window.location = 'spotify:playlist:3BBdBzOrmW88fxN50IDeWu';
+      // Fallback to web if app not available
+      setTimeout(() => {
+        window.open('https://open.spotify.com/playlist/3BBdBzOrmW88fxN50IDeWu', '_blank');
+      }, 1000);
+    }
+
+    // --- Relationship motivation quotes (for Love motivation 💬) ---
+    const quotes = [
+      "Jarak cuma ngetes sabar, bukan nurunin rasa. Aku tetep milih kamu. 💕",
+      "Nggak apa-apa hari ini capek. Aku tetep di sini, tim kamu selalu. 💞",
+      "Kita nggak perfect, tapi kita selalu balik lagi ke satu sama lain. Itu yang penting. 🌸",
+      "You’re allowed to feel tired. I’ll hold the world for a bit while you rest. 💗",
+      "Hubungan itu kerja sama. Aku jagain kamu, kamu jagain aku. We’re a team. 🤝",
+      "Kalo lagi ragu, inget ini: aku sayang kamu beneran. Ga main-main. 🫶",
+      "Semua yang berat bakal lewat. Tapi aku nggak akan lewat. Aku stay. 💫"
+    ];
+
+    // --- Work mood quotes (funny + demotivational / motivational kerja) ---
+    const workLines = [
+      "Motivation for work today: gajian masih lama tapi deadline deket 🙂",
+      "Kerja bagus itu penting. Tapi pulang on time lebih penting 😌",
+      "Semangat ya. Kalau capek istirahat. Kalo bos nyari bilang lagi 'on progress' 🙏",
+      "Target hari ini: keliatan sibuk tanpa beneran kerja 👍",
+      "Ingat: kerja keras tidak mengkhianati hasil. Tapi kadang hasilnya 'tolong revisi ya' 😭",
+      "Profesional adalah seseorang yang tetap senyum walau dalam hati teriak 'aku butuh libur panjang'.",
+      "Capek? Minum air. Stress? Minum air. Hidup? Minum air. Kita basicly tanaman kantor 🪴",
+      "Sometimes self care is: mute chat kerja, tarik napas, pura-pura nggak lihat.",
+      "We don't hate work. We just hate 'urgent ya sekarang' jam 16.59 🤡",
+      "Kerja dari hati itu bagus. Tapi jangan kasih semuanya. Sisain dikit buat hidup kamu sendiri, sayang. 🤍"
+    ];
+
+    // --- Popup helpers ---
+    const popupBackdrop = document.getElementById('popupBackdrop');
+    const popupTitle = document.getElementById('popupTitle');
+    const popupBody = document.getElementById('popupBody');
+
+    function closePopup() {
+      popupBackdrop.classList.remove('active');
+      popupBody.innerHTML = "";
+    }
+
+    function openPopup({ title, html }) {
+      popupTitle.textContent = title;
+      popupBody.innerHTML = html;
+      popupBackdrop.classList.add('active');
+    }
+
+    // --- Show Motivation Popup (relationship) ---
+    function showMotivation() {
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      const html = `
+        <div class="popup-text" style="padding:8px 4px 0 4px;">
+          ${randomQuote}
+        </div>
+        <div class="popup-sub">
+          i love you. breathe. you're doing great.
+        </div>
+      `;
+      openPopup({
+        title: "Love u 💬",
+        html
+      });
+    }
+
+    // --- Show Work Mood Popup (funny work quote) ---
+    function showWorkMood() {
+      const randomLine = workLines[Math.floor(Math.random() * workLines.length)];
+      const html = `
+        <div class="popup-text" style="padding:8px 4px 0 4px;">
+          ${randomLine}
+        </div>
+        <div class="popup-sub">
+          status kerja hari ini: still surviving 🔥
+        </div>
+      `;
+      openPopup({
+        title: "Motivasi kerja 😂",
+        html
+      });
+    }
+  </script>
 </body>
 </html>
-
-
-
