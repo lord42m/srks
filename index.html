@@ -6,7 +6,11 @@
   <title>For S❤️</title>
   <style>
     :root{
-      --bg:#fff5f7;
+      --bg-main:#fff6f9;
+      --bg-peach:#ffd9e2;
+      --bg-rose:#ffafc6;
+      --bg-lilac:#e9d5ff;
+
       --ink:#2b2b2b;
       --muted:#665c6f;
       --accent:#ff4d6d;
@@ -16,35 +20,134 @@
       --shadow: 0 20px 40px rgba(0,0,0,.08);
       --radius: 22px;
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
+
     body{
-      margin:0; font-family: ui-sans-serif, -apple-system, system-ui, "Segoe UI",
+      margin:0;
+      font-family: ui-sans-serif, -apple-system, system-ui, "Segoe UI",
       Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      color:var(--ink); background:
-      radial-gradient(1200px 800px at 10% -10%, #ffe3ea 0, transparent 60%),
-      radial-gradient(1000px 600px at 110% 10%, #ffeaf0 0, transparent 55%),
-      var(--bg);
+      color:var(--ink);
       line-height:1.6;
+      background-color:var(--bg-main);
+      position:relative;
+      overflow-x:hidden;
+
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(255,175,198,0.55) 0%, rgba(255,175,198,0) 60%),
+        radial-gradient(circle at 80% 30%, rgba(233,213,255,0.5) 0%, rgba(233,213,255,0) 60%),
+        radial-gradient(circle at 50% 80%, rgba(255,217,226,0.6) 0%, rgba(255,217,226,0) 65%),
+        radial-gradient(ellipse at 50% 50%, #fff6f9 0%, #ffe8f0 40%, #ffdce7 60%, #fbe7ff 100%);
+      background-repeat:no-repeat;
+      background-size:140% 140%;
     }
-    .wrap{max-width:880px;margin:32px auto;padding:0 20px 80px;position:relative}
-    .wrap::before,.wrap::after{
-      content:"";position:fixed;inset:0;pointer-events:none;
-      background:
-        radial-gradient(circle at 10% 20%, rgba(255,77,109,.08) 0 35%, transparent 36%),
-        radial-gradient(circle at 90% 30%, rgba(255,77,109,.06) 0 38%, transparent 39%);
-      animation:fadebg 10s ease-in-out infinite alternate
+
+    /* dreamy glow blobs behind the card stack */
+    .bg-glow{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:-1;
     }
-    @keyframes fadebg{to{opacity:.6}}
+
+    .glow-1,
+    .glow-2,
+    .glow-3{
+      position:absolute;
+      filter:blur(60px);
+      opacity:.35;
+      mix-blend-mode:screen;
+      border-radius:50%;
+    }
+
+    .glow-1{
+      width:320px;
+      height:320px;
+      left:-80px;
+      top:-80px;
+      background:radial-gradient(circle at 30% 30%,
+        rgba(255,118,150,.55) 0%,
+        rgba(255,118,150,0) 70%);
+      animation:float1 8s ease-in-out infinite alternate;
+    }
+
+    .glow-2{
+      width:360px;
+      height:360px;
+      right:-120px;
+      top:0;
+      background:radial-gradient(circle at 50% 30%,
+        rgba(198,132,255,.45) 0%,
+        rgba(198,132,255,0) 70%);
+      animation:float2 9s ease-in-out infinite alternate;
+    }
+
+    .glow-3{
+      width:460px;
+      height:460px;
+      left:50%;
+      bottom:-180px;
+      transform:translateX(-50%);
+      background:radial-gradient(circle at 50% 50%,
+        rgba(255,214,222,.55) 0%,
+        rgba(255,214,222,0) 70%);
+      animation:float3 10s ease-in-out infinite alternate;
+    }
+
+    @keyframes float1{
+      0%   {transform:translateY(0) translateX(0) scale(1);}
+      100% {transform:translateY(20px) translateX(10px) scale(1.05);}
+    }
+    @keyframes float2{
+      0%   {transform:translateY(0) translateX(0) scale(1);}
+      100% {transform:translateY(16px) translateX(-6px) scale(1.03);}
+    }
+    @keyframes float3{
+      0%   {transform:translate(-50%,0) scale(1);}
+      100% {transform:translate(-50%,18px) scale(1.06);}
+    }
+
+    /* subtle grain/noise overlay for cozy vibe */
+    .grain{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:-1;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");
+      background-size:200px 200px;
+      mix-blend-mode:soft-light;
+    }
+
+    .wrap{
+      max-width:880px;
+      margin:32px auto;
+      padding:0 20px 80px;
+      position:relative;
+    }
+
     header.hero{
       background:linear-gradient(135deg,#fff,#fff6f8 55%,#ffeef3 100%);
-      border:1px solid var(--ring);box-shadow:var(--shadow);
-      border-radius:calc(var(--radius)+6px);padding:28px 28px 32px;
-      position:relative;overflow:hidden
+      border:1px solid var(--ring);
+      box-shadow:var(--shadow);
+      border-radius:calc(var(--radius)+6px);
+      padding:28px 28px 32px;
+      position:relative;
+      overflow:hidden;
     }
     .hero h1{margin:0 0 8px;font-size:clamp(28px,4.5vw,44px)}
     .hero p.tag{margin:0;color:var(--muted);font-size:clamp(14px,2.2vw,16px)}
-    .badge{display:inline-block;padding:6px 12px;border-radius:999px;background:#fff;border:1px solid var(--ring);color:var(--muted);font-size:12px;letter-spacing:.3px;margin-top:10px}
+    .badge{
+      display:inline-block;
+      padding:6px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid var(--ring);
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.3px;
+      margin-top:10px
+    }
 
     /* Floating animated heart */
     .heart{
@@ -64,42 +167,93 @@
     }
 
     .card{
-      background:var(--card);border:1px solid var(--ring);border-radius:var(--radius);
-      box-shadow:var(--shadow);padding:24px;margin-top:18px
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:24px;
+      margin-top:18px;
+      backdrop-filter:blur(6px) saturate(1.2);
     }
+
     .grid{display:grid;gap:18px;grid-template-columns:repeat(12,1fr)}
     .col-7{grid-column:span 7}.col-5{grid-column:span 5}.col-6{grid-column:span 6}.col-12{grid-column:1/-1}
-    @media(max-width:820px){.col-7,.col-5,.col-6{grid-column:1/-1}}
-    .photo{width:100%;aspect-ratio:4/3;border-radius:18px;overflow:hidden;border:1px dashed #ffd3dc;display:grid;place-items:center;color:#b35a6a;
-      background:repeating-linear-gradient(45deg,#fff8fa 0 10px,#fff 10px 20px);font-size:14px}
-    .note{
-      background:#fff8fa;border:1px solid #ffd6de;padding:12px 14px;border-radius:12px;
-      font-size:14px;color:#7a6b79
+    @media(max-width:820px){
+      .col-7,.col-5,.col-6{grid-column:1/-1}
     }
-    h2.section-title{margin:0 0 12px;font-size:20px;display:flex;align-items:center;gap:10px}
-    .dot{width:8px;height:8px;background:var(--accent);border-radius:50%}
+
+    .photo{
+      width:100%;
+      aspect-ratio:4/3;
+      border-radius:18px;
+      overflow:hidden;
+      border:1px dashed #ffd3dc;
+      display:grid;
+      place-items:center;
+      color:#b35a6a;
+      background:repeating-linear-gradient(45deg,#fff8fa 0 10px,#fff 10px 20px);
+      font-size:14px
+    }
+    .note{
+      background:#fff8fa;
+      border:1px solid #ffd6de;
+      padding:12px 14px;
+      border-radius:12px;
+      font-size:14px;
+      color:#7a6b79
+    }
+    h2.section-title{
+      margin:0 0 12px;
+      font-size:20px;
+      display:flex;
+      align-items:center;
+      gap:10px
+    }
+    .dot{
+      width:8px;
+      height:8px;
+      background:var(--accent);
+      border-radius:50%
+    }
     ul.love-list{margin:10px 0 0;padding:0 0 0 1rem}
     ul.love-list li{margin:6px 0}
     .blockquote{
-      margin:6px 0 0;padding:14px 16px;border-left:3px solid var(--accent);
-      background:#fff7f9;border-radius:8px
+      margin:6px 0 0;
+      padding:14px 16px;
+      border-left:3px solid var(--accent);
+      background:#fff7f9;
+      border-radius:8px
     }
 
-    .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+    .cta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:12px
+    }
     .cta a.button{
-      text-decoration:none;display:inline-block;padding:12px 16px;border-radius:999px;
+      text-decoration:none;
+      display:inline-block;
+      padding:12px 16px;
+      border-radius:999px;
       border:1px solid var(--accent-2);
       background:linear-gradient(180deg,#fff,#fff6f8);
       box-shadow:0 6px 18px rgba(255,77,109,.13);
-      color:#b3264a;font-weight:600;cursor:pointer;transition:transform .2s ease;
+      color:#b3264a;
+      font-weight:600;
+      cursor:pointer;
+      transition:transform .2s ease, box-shadow .2s ease;
       min-width:max-content;
     }
-    .cta a.button:hover{transform:scale(1.05)}
-    .signature{margin-top:14px;font-size:15px;color:var(--muted)}
+    .cta a.button:hover{
+      transform:scale(1.05);
+      box-shadow:0 10px 24px rgba(255,77,109,.22);
+    }
+    .signature{margin-top:14px;font-size:15px;color:#665c6f}
     footer{text-align:center;color:#8a7689;font-size:13px;margin-top:28px}
 
     @media print{
-      body{background:#fff}.wrap::before,.wrap::after,.heart{display:none}
+      body{background:#fff}.bg-glow,.grain,.heart{display:none}
       .card,.hero{box-shadow:none}
       .cta a.button{border:1px solid #bbb;box-shadow:none;background:#fff;color:#000}
     }
@@ -164,7 +318,7 @@
       align-items:center;
       gap:6px;
       margin-bottom:8px;
-      padding-right:28px; /* avoid overlap with close btn */
+      padding-right:28px;
     }
     .popup-dot{
       width:7px;height:7px;border-radius:50%;background:var(--accent);
@@ -188,9 +342,28 @@
       text-align:center;
       line-height:1.4;
     }
+
+    /* canvas for animated glowing hearts */
+    .glow-canvas {
+      position:fixed;
+      inset:0;
+      z-index:-1;
+      pointer-events:none;
+    }
   </style>
 </head>
 <body>
+
+  <!-- dreamy glows behind content -->
+  <div class="bg-glow">
+    <div class="glow-1"></div>
+    <div class="glow-2"></div>
+    <div class="glow-3"></div>
+  </div>
+
+  <!-- soft grain overlay -->
+  <div class="grain"></div>
+
   <div class="wrap">
     <header class="hero">
       <div class="heart"></div>
@@ -274,7 +447,7 @@
     </footer>
   </div>
 
-  <!-- POPUP MODAL (centered). Reused for both buttons -->
+  <!-- POPUP MODAL / REUSED FOR BUTTONS -->
   <div id="popupBackdrop" class="popup-backdrop">
     <div class="popup-card" id="popupCard">
       <button class="popup-close" onclick="closePopup()">✕</button>
@@ -288,12 +461,13 @@
     </div>
   </div>
 
+  <!-- floating glowing hearts canvas -->
+  <canvas id="heartsCanvas" class="glow-canvas"></canvas>
+
   <script>
     // --- Spotify App Redirect ---
     function openSpotify() {
-      // Try open in app
       window.location = 'spotify:playlist:3BBdBzOrmW88fxN50IDeWu';
-      // Fallback to web if app not available
       setTimeout(() => {
         window.open('https://open.spotify.com/playlist/3BBdBzOrmW88fxN50IDeWu', '_blank');
       }, 1000);
@@ -302,15 +476,15 @@
     // --- Relationship motivation quotes (for Love motivation 💬) ---
     const quotes = [
       "Jarak cuma ngetes sabar, bukan nurunin rasa. Aku tetep milih kamu. 💕",
-      "Nggak apa-apa hari ini capek. Aku tetep di sini, tim kamu selalu. 💞",
-      "Kita nggak perfect, tapi kita selalu balik lagi ke satu sama lain. Itu yang penting. 🌸",
+      "Nggak apa-apa hari ini capek. Aku akan tetap disini menemanimu. 💞",
+      "Kita nggak perfect, tapi kita selalu berusaha untuk menjadi lebih baik untuk satu sama lain. Itu yang penting. 🌸",
       "You’re allowed to feel tired. I’ll hold the world for a bit while you rest. 💗",
       "Hubungan itu kerja sama. Aku jagain kamu, kamu jagain aku. We’re a team. 🤝",
       "Kalo lagi ragu, inget ini: aku sayang kamu beneran. Ga main-main. 🫶",
       "Semua yang berat bakal lewat. Tapi aku nggak akan lewat. Aku stay. 💫"
     ];
 
-    // --- Work mood quotes (funny + demotivational / motivational kerja) ---
+    // --- Work mood quotes (for Work mood 😂) ---
     const workLines = [
       "Motivation for work today: gajian masih lama tapi deadline deket 🙂",
       "Kerja bagus itu penting. Tapi pulang on time lebih penting 😌",
@@ -369,10 +543,104 @@
         </div>
       `;
       openPopup({
-        title: "Motivasi kerja 😂",
+        title: "Work 😂",
         html
       });
     }
+
+    // --- Floating glowing hearts background ---
+    const canvas = document.getElementById("heartsCanvas");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    class Heart {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + 40;
+        this.size = Math.random() * 14 + 10; // 10 - 24px
+        this.speedY = Math.random() * 0.7 + 0.4;
+        this.driftX = (Math.random() - 0.5) * 0.5;
+        this.alpha = Math.random() * 0.4 + 0.4; // 0.4 - 0.8
+        this.lifeFade = Math.random() * 0.0009 + 0.0009;
+
+        const palette = [
+          {r:255,g:77,b:109},   // pink
+          {r:255,g:140,b:170},  // rose
+          {r:255,g:184,b:200},  // blush
+          {r:226,g:134,b:255},  // pink-lilac
+        ];
+        this.color = palette[Math.floor(Math.random()*palette.length)];
+      }
+      step() {
+        this.y -= this.speedY;
+        this.x += this.driftX;
+        this.alpha -= this.lifeFade;
+        if (this.alpha <= 0 || this.y < -40) {
+          this.reset();
+          this.y = canvas.height + 40;
+        }
+      }
+      draw(ctx) {
+        const drawHeartShape = (scale=1) => {
+          const s = this.size * scale;
+          ctx.beginPath();
+          ctx.moveTo(0, -0.3*s);
+          ctx.bezierCurveTo(0, -0.6*s, -0.6*s, -0.6*s, -0.6*s, -0.15*s);
+          ctx.bezierCurveTo(-0.6*s, 0.1*s, -0.3*s, 0.35*s, 0, 0.55*s);
+          ctx.bezierCurveTo(0.3*s, 0.35*s, 0.6*s, 0.1*s, 0.6*s, -0.15*s);
+          ctx.bezierCurveTo(0.6*s, -0.6*s, 0, -0.6*s, 0, -0.3*s);
+          ctx.closePath();
+        };
+
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // outer glow
+        ctx.save();
+        ctx.globalAlpha = this.alpha * 0.5;
+        ctx.shadowColor = `rgba(${this.color.r},${this.color.g},${this.color.b},0.8)`;
+        ctx.shadowBlur = this.size * 1.5;
+        ctx.fillStyle = `rgba(${this.color.r},${this.color.g},${this.color.b},0.25)`;
+        drawHeartShape(1.4);
+        ctx.fill();
+        ctx.restore();
+
+        // inner heart
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = `rgba(${this.color.r},${this.color.g},${this.color.b},1)`;
+        ctx.strokeStyle = `rgba(255,255,255,0.6)`;
+        ctx.lineWidth = 0.6;
+        drawHeartShape(1.0);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.restore();
+      }
+    }
+
+    const HEART_COUNT = 28;
+    const hearts = Array.from({length: HEART_COUNT}, () => new Heart());
+
+    function animate() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      hearts.forEach(h => {
+        h.step();
+        h.draw(ctx);
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
   </script>
 </body>
 </html>
