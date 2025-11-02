@@ -4,6 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>For S❤️</title>
+  <meta name="theme-color" content="#ff4d6d" />
+  <!-- minimal inline manifest -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"For S ❤️","short_name":"For S","start_url":".","display":"standalone","background_color":"#fff6f9","theme_color":"#ff4d6d"}'>
   <style>
     :root{
       --bg-main:#fff6f9;
@@ -136,7 +139,6 @@
       overflow:hidden;
     }
     .hero h1{margin:0 0 8px;font-size:clamp(28px,4.5vw,44px)}
-    .hero p.tag{margin:0;color:var(--muted);font-size:clamp(14px,2.2vw,16px)}
     .badge{
       display:inline-block;
       padding:6px 12px;
@@ -255,6 +257,7 @@
       transform:scale(1.05);
       box-shadow:0 10px 24px rgba(255,77,109,.22);
     }
+
     .signature{margin-top:14px;font-size:15px;color:#665c6f}
     footer{text-align:center;color:#8a7689;font-size:13px;margin-top:28px}
 
@@ -348,6 +351,31 @@
       text-align:center;
       line-height:1.4;
     }
+    .popup-actions{
+      display:flex;
+      gap:8px;
+      justify-content:space-between;
+      margin-top:12px;
+    }
+    .popup-btn{
+      border:none;
+      background:#fff;
+      border:1px solid rgba(255,77,109,.25);
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      color:#b3264a;
+      cursor:pointer;
+      flex:1;
+      min-width:0;
+    }
+    .popup-btn.copy{
+      flex:1.3;
+      font-weight:600;
+    }
+    .popup-btn:active{
+      transform:translateY(1px);
+    }
 
     /* canvas for animated glowing hearts */
     .glow-canvas {
@@ -425,7 +453,6 @@
       <div class="cta">
         <button id="btnPlaylist" type="button">Our playlist 🎵</button>
         <button id="btnLove" type="button">Love U 💬</button>
-        <button id="btnWork" type="button">Work 😂</button>
         <button id="btnLetter" type="button">Open letter ✉️</button>
       </div>
 
@@ -481,7 +508,9 @@
   <canvas id="heartsCanvas" class="glow-canvas"></canvas>
 
   <script>
-    // --- Relationship motivation quotes (for Love U 💬) ---
+    // =========================
+    // 1. DATA
+    // =========================
     const quotes = [
       "Jarak cuma ngetes sabar, bukan nurunin rasa. Aku tetep milih kamu. 💕",
       "Nggak apa-apa hari ini capek. Aku tetep di sini, tim kamu selalu. 💞",
@@ -535,60 +564,11 @@
       "Kamu nggak cuma bagian dari hidupku, tapi seluruh alasannya. ❤️"
     ];
 
-    // --- Work mood quotes (for Work 😂) ---
-    const workLines = [
-      "Motivation for work today: gajian masih lama tapi deadline deket 🙂",
-      "Kerja bagus itu penting. Tapi pulang on time lebih penting 😌",
-      "Semangat ya. Kalau capek istirahat. Kalo bos nyari bilang lagi 'on progress' 🙏",
-      "Target hari ini: keliatan sibuk tanpa beneran kerja 👍",
-      "Ingat: kerja keras tidak mengkhianati hasil. Tapi kadang hasilnya 'tolong revisi ya' 😭",
-      "Profesional adalah seseorang yang tetap senyum walau dalam hati teriak 'aku butuh libur panjang'.",
-      "Capek? Minum air. Stress? Minum air. Hidup? Minum air. Kita basically tanaman kantor 🪴",
-      "We don't hate work. We just hate 'urgent ya sekarang' jam 16.59 🤡",
-      "Kerja dari hati itu bagus. Tapi jangan kasih semuanya. Sisain dikit buat hidup kamu sendiri 🤍",
-      "Kadang kerja bukan buat kaya, tapi biar nggak dimarahin aja. 😭",
-      "Senin: berharap jadi Jumat. Jumat: takut jadi Senin lagi. 🔁",
-      "Laptop panas, kepala panas, tapi gaji tetap adem. 🥶",
-      "Multitasking: mikirin kerjaan, gaji, dan pengen resign bersamaan. 🤯",
-      "Kerja bagus gak selalu dihargai. Tapi salah dikit langsung masuk meeting. 😐",
-      "Deadline itu kayak mantan, dateng tiba-tiba dan bikin panik. 😩",
-      "Zoom meeting lagi, tapi kamera mati karena muka udah lelah. 🎥",
-      "Kopi jadi sahabat terbaik dalam hubungan toxic bernama kerja. ☕",
-      "Bilangnya kerja hybrid, tapi nyatanya capek fulltime. 💻",
-      "Gaji belum naik, tapi tanggung jawab naik level terus. 📈",
-      "Beban kerja tinggi, tapi WiFi rendah. 😭",
-      "Skill utama: terlihat sibuk padahal lagi scrolling Shopee. 🛍️",
-      "Motivasi hari ini: biar nanti bisa tidur dengan tenang. 😴",
-      "Tugas baru datang sebelum tugas lama selesai. Infinite loop. ♻️",
-      "Work life balance itu nyata, tapi belum unlock di negara ini. 🕰️",
-      "Kerja itu ibadah, tapi kenapa rasanya kayak ujian nasional tiap hari. 📚",
-      "Makan siang jadi waktu paling bahagia. 🍛",
-      "Dunia kerja mengajarkan: sabar, sabar, sabar, lalu ‘eh kok jam segini masih kerja?’. 😅",
-      "Rapat dadakan adalah bentuk teror modern. 📞",
-      "Kalo udah jam 4 sore, semangat kerja ikut lowbat. 🔋",
-      "Banyak kerjaan tapi minim penghargaan. Standar. 😎",
-      "Teamwork: aku kerja, kamu nanya, dia lupa. 🧩",
-      "Hari ini ngantuk, besok juga. Konsisten banget. 💤",
-      "Deadline: besok. Aku: nanti aja. 🤡",
-      "Kerja keras menghasilkan... lelah. 😮‍💨",
-      "Motivasi pagi: ‘ayo kerja biar bisa jajan boba’. 🧋",
-      "Lembur itu cinta tanpa pamrih. Karena bonus gak pernah datang. 💔",
-      "Ngetik sambil mikir kapan libur panjang berikutnya. 📅",
-      "Susahnya bukan kerja, tapi pura-pura semangat kerja. 😅",
-      "Jobdesk: semua hal yang gak dikerjain orang lain. 🎯",
-      "Tugas numpuk tapi dompet tetap tipis. Ironi modern. 💸",
-      "Work smarter katanya, tapi kerjaan tetep nambah. 🤷‍♀️",
-      "Bersyukur punya kerjaan, tapi boleh kan ngeluh dikit. 😌",
-      "Weekend: recharge. Monday: decharge. 🔋",
-      "Rapat 2 jam, hasilnya ‘kita bahas lagi minggu depan’. 😐",
-      "Kalimat paling bahagia di kantor: ‘boleh pulang lebih awal’. 🏃‍♂️",
-      "Gaji datang, semangat hidup naik. Dua hari kemudian, hilang lagi. 💀",
-      "Work from home: kerja, makan, rebahan, ulang. 🔁",
-      "Produktif bukan berarti bahagia. Kadang cuma takut dipecat aja. 😭",
-      "Kerja itu teamwork, tapi kenapa rasanya solo player terus. 🎮"
-    ];
+    const QUOTE_STORAGE_KEY = 'for_s_last_quote';
 
-    // --- Popup helpers ---
+    // =========================
+    // 2. POPUP / MODAL
+    // =========================
     const popupBackdrop = document.getElementById('popupBackdrop');
     const popupTitle = document.getElementById('popupTitle');
     const popupBody = document.getElementById('popupBody');
@@ -607,48 +587,104 @@
       popupBackdrop.setAttribute('aria-hidden','false');
     }
 
-    function openSpotify() {
-      // try app first
-      window.location = 'spotify:playlist:3BBdBzOrmW88fxN50IDeWu';
-      // then web fallback
-      setTimeout(() => {
-        window.open('https://open.spotify.com/playlist/3BBdBzOrmW88fxN50IDeWu', '_blank');
-      }, 500);
+    // =========================
+    // 3. LOVE QUOTES POPUP (with cycle + copy + saved index)
+    // =========================
+    let currentQuoteIndex = 0;
+
+    function saveQuoteIndex(idx) {
+      try {
+        localStorage.setItem(QUOTE_STORAGE_KEY, String(idx));
+      } catch (e) {
+        // ignore if private mode
+      }
     }
 
-    function showMotivation() {
-      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    function loadQuoteIndex() {
+      try {
+        const v = localStorage.getItem(QUOTE_STORAGE_KEY);
+        if (v === null) return null;
+        const num = Number(v);
+        if (Number.isNaN(num)) return null;
+        if (num < 0 || num >= quotes.length) return null;
+        return num;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function renderQuoteContent() {
+      const quoteEl = document.getElementById('quoteText');
+      if (!quoteEl) return;
+      const q = quotes[currentQuoteIndex];
+      quoteEl.textContent = q;
+    }
+
+    function openQuotesPopup(startIndex) {
+      // decide which index to use
+      let idx = null;
+      if (typeof startIndex === 'number') {
+        idx = startIndex;
+      } else {
+        const saved = loadQuoteIndex();
+        if (saved !== null) {
+          idx = saved;
+        } else {
+          // fallback random
+          idx = Math.floor(Math.random() * quotes.length);
+        }
+      }
+      currentQuoteIndex = idx;
       const html = `
-        <div class="popup-text" style="padding:8px 4px 0 4px;">
-          ${randomQuote}
-        </div>
+        <div class="popup-text" id="quoteText" style="padding:8px 4px 0 4px;"></div>
         <div class="popup-sub">
           Loveeee U ❤️.
+        </div>
+        <div class="popup-actions" id="quoteActions">
+          <button type="button" class="popup-btn" data-action="prev">← Prev</button>
+          <button type="button" class="popup-btn copy" data-action="copy">Copy 💌</button>
+          <button type="button" class="popup-btn" data-action="next">Next →</button>
         </div>
       `;
       openPopup({
         title: "Love u 💬",
         html
       });
+      renderQuoteContent();
+      saveQuoteIndex(currentQuoteIndex);
+      playSoftChime();
     }
 
-    function showWorkMood() {
-      const randomLine = workLines[Math.floor(Math.random() * workLines.length)];
-      const html = `
-        <div class="popup-text" style="padding:8px 4px 0 4px;">
-          ${randomLine}
-        </div>
-        <div class="popup-sub">
-          Semangat kerjanya ❤️🔥
-        </div>
-      `;
-      openPopup({
-        title: "Work 😂",
-        html
-      });
+    function goToNextQuote() {
+      currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+      renderQuoteContent();
+      saveQuoteIndex(currentQuoteIndex);
     }
 
-    // new: romantic letter popup
+    function goToPrevQuote() {
+      currentQuoteIndex = (currentQuoteIndex - 1 + quotes.length) % quotes.length;
+      renderQuoteContent();
+      saveQuoteIndex(currentQuoteIndex);
+    }
+
+    async function copyCurrentQuote() {
+      const q = quotes[currentQuoteIndex];
+      try {
+        await navigator.clipboard.writeText(q);
+        const copyBtn = popupBody.querySelector('[data-action="copy"]');
+        if (copyBtn) {
+          const old = copyBtn.textContent;
+          copyBtn.textContent = "Copied ✅";
+          setTimeout(() => copyBtn.textContent = old, 1500);
+        }
+      } catch (err) {
+        alert("Gagal copy, tapi kamu masih cantik 😌");
+      }
+    }
+
+    // =========================
+    // 4. LETTER POPUP
+    // =========================
     function showLetter() {
       const html = `
         <div class="popup-text" style="padding:4px 2px 0 2px;">
@@ -673,7 +709,42 @@
       });
     }
 
-    // --- Floating glowing hearts background ---
+    // =========================
+    // 5. SPOTIFY
+    // =========================
+    function openSpotify() {
+      window.location = 'spotify:playlist:3BBdBzOrmW88fxN50IDeWu';
+      setTimeout(() => {
+        window.open('https://open.spotify.com/playlist/3BBdBzOrmW88fxN50IDeWu', '_blank');
+      }, 500);
+    }
+
+    // =========================
+    // 6. SOFT AUDIO (Web Audio, no file)
+    // =========================
+    let audioCtx = null;
+    function playSoftChime() {
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(660, now);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.35, now + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.6);
+      } catch (e) {}
+    }
+
+    // =========================
+    // 7. FLOATING HEARTS CANVAS
+    // =========================
     const canvas = document.getElementById("heartsCanvas");
     const ctx = canvas.getContext("2d");
 
@@ -683,7 +754,6 @@
     function resizeCanvas() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      // recreate hearts so they match new size
       hearts = Array.from({length: HEART_COUNT}, () => new Heart());
     }
 
@@ -694,17 +764,17 @@
       reset() {
         this.x = Math.random() * canvas.width;
         this.y = canvas.height + 40;
-        this.size = Math.random() * 14 + 10; // 10 - 24px
+        this.size = Math.random() * 14 + 10;
         this.speedY = Math.random() * 0.7 + 0.4;
         this.driftX = (Math.random() - 0.5) * 0.5;
-        this.alpha = Math.random() * 0.4 + 0.4; // 0.4 - 0.8
+        this.alpha = Math.random() * 0.4 + 0.4;
         this.lifeFade = Math.random() * 0.0009 + 0.0009;
 
         const palette = [
-          {r:255,g:77,b:109},   // pink
-          {r:255,g:140,b:170},  // rose
-          {r:255,g:184,b:200},  // blush
-          {r:226,g:134,b:255},  // pink-lilac
+          {r:255,g:77,b:109},
+          {r:255,g:140,b:170},
+          {r:255,g:184,b:200},
+          {r:226,g:134,b:255},
         ];
         this.color = palette[Math.floor(Math.random()*palette.length)];
       }
@@ -766,17 +836,44 @@
       requestAnimationFrame(animate);
     }
 
-    // --- DOM Ready wiring ---
+    // =========================
+    // 8. PWA-ish: register SW from inline blob
+    // =========================
+    (function registerSW(){
+      if ('serviceWorker' in navigator) {
+        const swCode = `
+          const CACHE = 'for-s-v1';
+          self.addEventListener('install', (e) => {
+            e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./'])).catch(()=>{}));
+            self.skipWaiting();
+          });
+          self.addEventListener('activate', (e) => {
+            e.waitUntil(self.clients.claim());
+          });
+          self.addEventListener('fetch', (e) => {
+            e.respondWith(
+              fetch(e.request).catch(() => caches.match(e.request))
+            );
+          });
+        `;
+        const blob = new Blob([swCode], {type: 'text/javascript'});
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl).catch(()=>{});
+      }
+    })();
+
+    // =========================
+    // 9. DOM Ready wiring
+    // =========================
     document.addEventListener('DOMContentLoaded', () => {
-      // buttons
       const btnPlaylist = document.getElementById('btnPlaylist');
       const btnLove = document.getElementById('btnLove');
-      const btnWork = document.getElementById('btnWork');
       const btnLetter = document.getElementById('btnLetter');
 
       btnPlaylist.addEventListener('click', openSpotify);
-      btnLove.addEventListener('click', showMotivation);
-      btnWork.addEventListener('click', showWorkMood);
+      btnLove.addEventListener('click', () => {
+        openQuotesPopup(); // now it will try saved index first
+      });
       btnLetter.addEventListener('click', showLetter);
 
       // popup close btn
@@ -787,6 +884,16 @@
         if (e.target === popupBackdrop) {
           closePopup();
         }
+      });
+
+      // handle actions in popup (delegation)
+      popupBody.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        const action = btn.getAttribute('data-action');
+        if (action === 'next') goToNextQuote();
+        else if (action === 'prev') goToPrevQuote();
+        else if (action === 'copy') copyCurrentQuote();
       });
 
       // esc to close
