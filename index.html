@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>For S❤️</title>
   <meta name="theme-color" content="#ff4d6d" />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600&display=swap" rel="stylesheet">
   <link rel="manifest" href='data:application/manifest+json,{"name":"For S ❤️","short_name":"For S","start_url":".","display":"standalone","background_color":"#fff6f9","theme_color":"#ff4d6d"}'>
   <style>
     :root{
@@ -228,6 +229,81 @@
     @keyframes openFlap { 0% { transform: rotateX(0deg); } 100% { transform: rotateX(-180deg); } }
     @keyframes pullLetter { 0% { bottom: -120%; } 100% { bottom: 10px; } }
     .letter-text { font-size: 15px; line-height: 1.6; color: var(--ink); width:100%; height:100%; overflow:auto; }
+/* ============================= */
+/* ✉️ LETTER STYLING (ADDED)     */
+/* ============================= */
+
+/* Paper texture + padding */
+.env-letter {
+  background-color: #fffaf6;
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.03),
+      rgba(0,0,0,0.03) 1px,
+      transparent 1px,
+      transparent 28px
+    ),
+    radial-gradient(circle at top left, rgba(0,0,0,0.04), transparent 60%);
+  padding: 18px 18px 16px;
+}
+
+/* Dark mode paper */
+body.dark .env-letter {
+  background-color: #1c161a;
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.05),
+      rgba(255,255,255,0.05) 1px,
+      transparent 1px,
+      transparent 28px
+    );
+}
+
+/* Cursive handwriting font ONLY for letter */
+.letter-text {
+  font-family: "Dancing Script", "Pacifico", "Segoe Script",
+               "Comic Sans MS", cursive;
+  font-size: 17px;
+  line-height: 1.8;
+  color: #3a2a32;
+  padding-right: 6px;
+}
+
+/* Dark mode readable ink */
+body.dark .letter-text {
+  color: #f2dfe8;
+}
+
+/* Smooth text rendering */
+.letter-text {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+/* ============================= */
+/* 😭 SAD EMOJI RAIN             */
+/* ============================= */
+.sad-emoji {
+  position: fixed;
+  top: -30px;
+  font-size: 20px;
+  opacity: 0.8;
+  animation: sadFall linear forwards;
+  pointer-events: none;
+  z-index: 100002;
+}
+
+@keyframes sadFall {
+  from {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(110vh) rotate(25deg);
+    opacity: 0;
+  }
+}
 
   </style>
 </head>
@@ -463,7 +539,7 @@
       const idx = getDailyIndex();
       const html = `
         <div class="popup-text" id="quoteText" style="padding:8px 4px 0 4px;">${quotes[idx]}</div>
-        <div class="popup-sub">Come back tomorrow for a new one</div>
+        <div class="popup-sub">love u always ❤️</div>
         <div class="popup-actions">
           <button type="button" class="popup-btn" data-action="copy">Copy 💌</button>
         </div>
@@ -505,7 +581,7 @@ Just in case hari ini kamu lagi ngerasa capek atau kepikiran banyak hal, aku mau
 
 Aku bangga banget sama kamu. Sama semua hal yang kamu kejar, sama semua hal yang kamu tahan, sama caramu milih buat tetap stay di hubungan ini meski jarak dan waktu kadang nggak ramah.
 
-Jadi kalo suatu hari kamu ragu, buka ini lagi ya. Aku nggak ke mana-mana. I’m choosing you, over and over. 💌
+Jadi kalo suatu hari kamu ragu, buka ini lagi ya. Aku nggak ke mana-mana. I’m choosing you, over and over. 
 
 - yours, M 🤍`;
 
@@ -570,6 +646,16 @@ Jadi kalo suatu hari kamu ragu, buka ini lagi ya. Aku nggak ke mana-mana. I’m 
     const loveGateCard = document.getElementById('loveGateCard');
     const loveYes = document.getElementById('loveYes');
     const loveNo = document.getElementById('loveNo');
+    let forgiven = false;
+    let noAfterForgive = 0;
+
+    function showHug() {
+      const hug = document.createElement('div');
+      hug.className = 'hug';
+      hug.textContent = '🫂';
+      document.body.appendChild(hug);
+      setTimeout(() => hug.remove(), 1800);
+    }
 
     // small overlay
     const loveMsgOverlay = document.getElementById('loveMsgOverlay');
@@ -606,34 +692,136 @@ Jadi kalo suatu hari kamu ragu, buka ini lagi ya. Aku nggak ke mana-mana. I’m 
     loveYes.addEventListener('click', () => {
       showLoveMsg({ mode: "love", title: "nah gitu dong 🥰", text: "love u too 💗", btnText: "🥺💕" });
     });
+const sadViolin = document.getElementById('sadViolin');
+const heartBeat = document.getElementById('heartBeat');
 
-    loveNo.addEventListener('click', () => {
-      loveNoCount += 1;
-      const vw = window.innerWidth, vh = window.innerHeight;
-      const cardW = 340, cardH = 240;
-      const maxX = Math.min(120, (vw - cardW)/2);
-      const maxY = Math.min(90, (vh - cardH)/2);
-      const randX = (Math.random() * 2 - 1) * maxX;
-      const randY = (Math.random() * 2 - 1) * maxY;
-      loveGateCard.style.transform = `translate(${randX}px, ${randY}px)`;
-      if(loveNoCount >= 5){
-        loveNoCount = 0;
-        showLoveMsg({ mode: "angry", title: "aku marah 😤", text: "kok pilih no terus siiihh 😭 pilih yes dong!", btnText: "iya maaf 🥺" });
-      }
+function spawnSadEmoji() {
+  const emoji = document.createElement('div');
+  emoji.className = 'sad-emoji';
+  emoji.textContent = Math.random() < 0.5 ? '😭' : '😔';
+  emoji.style.left = Math.random() * window.innerWidth + 'px';
+  emoji.style.animationDuration = 3 + Math.random() * 2 + 's';
+  document.body.appendChild(emoji);
+  setTimeout(() => emoji.remove(), 5200);
+}
+
+loveNo.addEventListener('click', () => {
+
+if (forgiven) {
+  noAfterForgive += 1;
+
+  if (noAfterForgive >= 3) {
+    showLoveMsg({
+      mode: "love",
+      title: "🥰",
+      text: "ihh masih ngeyel 😭 tapi aku tetep sayang kamu kok",
+      btnText: "hehe 🤍"
+    });
+    noAfterForgive = 0;
+  }
+}
+
+  loveNoCount += 1;
+
+  // playful dodge (original behavior)
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const cardW = 340, cardH = 240;
+  const maxX = Math.min(120, (vw - cardW)/2);
+  const maxY = Math.min(90, (vh - cardH)/2);
+  loveGateCard.style.transform = `
+    translate(
+      ${(Math.random() * 2 - 1) * maxX}px,
+      ${(Math.random() * 2 - 1) * maxY}px
+    )`;
+
+  // 💔 TOO MANY NOs → FULL DRAMA MODE
+  if (loveNoCount >= 7) {
+    loveNoCount = 0;
+
+    // stop bg music
+    stopBackgroundMusic && stopBackgroundMusic();
+
+    // play sad violin
+    sadViolin && sadViolin.play().catch(()=>{});
+
+    // sulk visual
+    document.body.classList.add('sulk');
+
+    // sad rain
+    const rainInterval = setInterval(spawnSadEmoji, 250);
+
+    // sad popup
+    showLoveMsg({
+      mode: "angry",
+      title: "😔",
+      text: "aku sedih…",
+      btnText: "peluk dulu 🫂"
     });
 
-    loveMsgBtn.addEventListener('click', () => {
-      if(loveMsgMode === "angry"){ hideLoveMsg(); return; }
-      if(loveMsgMode === "love"){
-        hideLoveMsg();
-        loveGate.classList.add('hide');
-        document.body.classList.remove('locked');
-        setTimeout(()=>{ document.body.classList.remove('preload'); }, 50);
-        startTypewriter();
-        launchConfetti();           // heart confetti 🎉💗
-        setTimeout(showMusicChoice, 300);
-      }
-    });
+    // recovery phase 💓
+    setTimeout(() => {
+      clearInterval(rainInterval);
+      document.body.classList.remove('sulk');
+      document.body.classList.add('recover');
+
+      sadViolin && sadViolin.pause();
+      sadViolin.currentTime = 0;
+
+      heartBeat && heartBeat.play().catch(()=>{});
+
+      setTimeout(() => {
+        heartBeat && heartBeat.pause();
+        heartBeat.currentTime = 0;
+
+        document.body.classList.remove('recover');
+
+        // forgiveness popup 🤍
+        showLoveMsg({
+          mode: "love",
+          title: "🤍",
+          text: "aku maafin kok… asal kamu pilih YES sekarang 😌",
+          btnText: "hehe 🥺"
+        });
+      }, 3200);
+    }, 4500);
+  }
+});
+loveMsgBtn.addEventListener('click', () => {
+
+  /* 😔 ANGRY MODE (peluk dulu) */
+  if (loveMsgMode === "angry") {
+    hideLoveMsg();
+    showHug();
+    return;
+  }
+
+  /* 💖 LOVE MODE (YES flow) */
+  if (loveMsgMode === "love") {
+    hideLoveMsg();
+
+    // 🧠 mark forgiven
+    forgiven = true;
+
+    // 💗 blush screen
+    document.body.classList.add('blush');
+    setTimeout(() => document.body.classList.remove('blush'), 3000);
+
+    // 😳 YES button grows
+    loveYes.classList.add('grow');
+
+    // 🚪 ENTER THE PAGE (THIS WAS MISSING)
+    loveGate.classList.add('hide');
+    document.body.classList.remove('locked');
+    setTimeout(() => {
+      document.body.classList.remove('preload');
+    }, 50);
+
+    // ✨ original effects
+    startTypewriter();
+    launchConfetti();
+    setTimeout(showMusicChoice, 300);
+  }
+});
 
     /* ===== Music choice ===== */
     const musicChoice = document.getElementById('musicChoice');
@@ -835,6 +1023,112 @@ Jadi kalo suatu hari kamu ragu, buka ini lagi ya. Aku nggak ke mana-mana. I’m 
       initTheme();
     });
   </script>
+<script>
+  (function () {
+    const GREETING_KEY = "for_s_daily_greeting";
+
+    function getGreetingData() {
+      const hour = new Date().getHours();
+      const minute = new Date().getMinutes();
+      const time = hour + minute / 60;
+
+      // 05.00 - 11.59
+      if (time >= 5 && time < 12) {
+        return {
+          title: "🌅",
+          text: "Good Morning bby",
+          sub: "selamat beraktivitas dan semoga hari mu menyenangkan 💖"
+        };
+      }
+
+      // 12.00 - 16.59
+      if (time >= 12 && time < 17) {
+        return {
+          title: "☀️",
+          text: "Good Afternoon bby",
+          sub: "jangan lupa makan siang yaa 😊"
+        };
+      }
+
+      // 17.00 - 18.59
+      if (time >= 17 && time < 19) {
+        return {
+          title: "🌆",
+          text: "Good Evening bby",
+          sub: "ayooo pulangg jangan kerja teruss 😤"
+        };
+      }
+
+      // 18.59 - 20.59
+      if (time >= 18.983 && time < 21) {
+        return {
+          title: "🍽️",
+          text: "Good Eveningg",
+          sub: "jangan lupa makan malam ya sayang 💕"
+        };
+      }
+
+      // 21.00 - 04.59
+      return {
+        title: "🌙",
+        text: "Good Night bbyy❤️",
+        sub: "Rest well and sweet dreams. Miss you a lot ❤️"
+      };
+    }
+
+    function shouldShowGreeting() {
+      try {
+        return localStorage.getItem(GREETING_KEY) !== new Date().toDateString();
+      } catch {
+        return true;
+      }
+    }
+
+    function markGreetingShown() {
+      try {
+        localStorage.setItem(GREETING_KEY, new Date().toDateString());
+      } catch {}
+    }
+
+    function showGreetingPopup() {
+      if (typeof openPopup !== "function") return;
+
+      const g = getGreetingData();
+
+      openPopup({
+        title: g.title,
+        html: `
+          <div style="
+            text-align:center;
+            font-size:24px;
+            font-weight:700;
+            padding:30px 12px 14px;
+          ">
+            ${g.text}
+          </div>
+          <div class="popup-sub" style="font-size:13px">
+            ${g.sub}
+          </div>
+        `
+      });
+
+      if (typeof playSoftChime === "function") playSoftChime();
+      markGreetingShown();
+    }
+
+    // 🔒 Trigger ONLY after Love Gate → YES
+    const loveYesBtn = document.getElementById("loveYes");
+    if (loveYesBtn) {
+      loveYesBtn.addEventListener("click", () => {
+        setTimeout(() => {
+          if (shouldShowGreeting()) showGreetingPopup();
+        }, 1400);
+      });
+    }
+  })();
+</script>
+
 </body>
 </html>
+
 
